@@ -9,7 +9,7 @@
 
 #include "ff.h"			/* Obtains integer types */
 #include "diskio.h"		/* Declarations of disk functions */
-#include "string.h"
+#include "sd_io.h"
 #include "ff_sd_driver.h"
 
 #define DEV_RAM		0	/* Example: Map Ramdisk to physical drive 0 */
@@ -25,9 +25,22 @@ DSTATUS disk_status (
 	BYTE pdrv		/* Physical drive nmuber to identify the drive */
 )
 {
-	(void)pdrv;
-
-	return disk_status(dev);
+	switch (pdrv)
+	{
+		case DEV_RAM:
+			return RES_ERROR;
+		break;
+		case DEV_MMC:
+			return SD_Status(dev);
+		break;
+		case DEV_USB:
+			return RES_ERROR;
+		break;
+		default:
+			return RES_ERROR;
+		break;
+	}
+	return RES_ERROR;
 }
 
 
@@ -40,9 +53,22 @@ DSTATUS disk_initialize (
 	BYTE pdrv				/* Physical drive nmuber to identify the drive */
 )
 {
-	(void)pdrv;
-
-	return RAM_disk_initialize();
+	switch (pdrv)
+	{
+		case DEV_RAM:
+			return RES_ERROR;
+		break;
+		case DEV_MMC:
+			return SD_disk_initialize();
+		break;
+		case DEV_USB:
+			return RES_ERROR;
+		break;
+		default:
+			return RES_ERROR;
+		break;
+	}
+	return RES_ERROR;
 }
 
 
@@ -58,9 +84,22 @@ DRESULT disk_read (
 	UINT count		/* Number of sectors to read */
 )
 {
-	(void)pdrv;
-
-	return RAM_disk_read(buff, sector, count);
+	switch (pdrv)
+	{
+		case DEV_RAM:
+			return RES_ERROR;
+		break;
+		case DEV_MMC:
+			return SD_disk_read(buff, sector, count);
+		break;
+		case DEV_USB:
+			return RES_ERROR;
+		break;
+		default:
+			return RES_ERROR;
+		break;
+	}
+	return RES_ERROR;
 }
 
 
@@ -78,9 +117,22 @@ DRESULT disk_write (
 	UINT count			/* Number of sectors to write */
 )
 {
-	(void)pdrv;
-
-	return RAM_disk_write(buff, sector, count);
+	switch (pdrv)
+	{
+		case DEV_RAM:
+			return RES_ERROR;
+		break;
+		case DEV_MMC:
+			return SD_disk_write(buff, sector, count);
+		break;
+		case DEV_USB:
+			return RES_ERROR;
+		break;
+		default:
+			return RES_ERROR;
+		break;
+	}
+	return RES_ERROR;
 }
 
 #endif
@@ -96,6 +148,21 @@ DRESULT disk_ioctl (
 	void *buff		/* Buffer to send/receive control data */
 )
 {
-	return RAM_disk_ioctl(&cmd,buff);
+	switch (pdrv)
+	{
+		case DEV_RAM:
+			return RES_ERROR;
+		break;
+		case DEV_MMC:
+			return SD_disk_ioctl(&cmd,buff);
+		break;
+		case DEV_USB:
+			return RES_ERROR;
+		break;
+		default:
+			return RES_ERROR;
+		break;
+	}
+	return RES_ERROR;
 }
 
